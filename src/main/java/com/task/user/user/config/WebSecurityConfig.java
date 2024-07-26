@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -17,7 +16,8 @@ public class WebSecurityConfig {
             "/hello",
             "/register",
             "/verifyRegistration*",
-            "/resendVerifyToken*"
+            "/resendVerifyToken*",
+            "/verify"
     };
 
     @Bean
@@ -35,7 +35,7 @@ public class WebSecurityConfig {
             .requestMatchers(WHITE_LIST_URLS).permitAll()
             .anyRequest().authenticated()
             .and()
-            .formLogin(); // If you want to enable form-based login
+            .formLogin();
 
         return http.build();
     }

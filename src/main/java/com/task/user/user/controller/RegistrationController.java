@@ -5,6 +5,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.task.user.user.entity.User;
@@ -26,6 +27,7 @@ public class RegistrationController {
     public String GetUser() {
         return "User registered successfully with ID: " ;
     }
+
     @PostMapping("/register")
     public String registerUser(@RequestBody UserModel userModel, final HttpServletRequest request) {
         User user = userService.registerUser(userModel);
@@ -35,5 +37,14 @@ public class RegistrationController {
 
     private String applicationUrl(HttpServletRequest request) {
         return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+    }
+
+    @GetMapping("/verify")
+    public String verifyRegistration(@RequestParam("token") String token) {
+        String result = userService.validateVerificationToken(token);
+        if(result.equalsIgnoreCase("valid")) {
+            return "User Verified Successfully";
+        }
+        return "Bad User";
     }
 }
