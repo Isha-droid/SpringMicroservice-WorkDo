@@ -1,6 +1,7 @@
 package com.task.user.user.service;
 
 import com.task.user.user.entity.User;
+import com.task.user.user.entity.VerificationToken;
 import com.task.user.user.models.UserModel;
 
 public interface  UserService {
@@ -9,6 +10,7 @@ public interface  UserService {
 
     void saveVerificationTokenForUser(User user, String token);
     String validateVerificationToken(String token);
+    VerificationToken generateNewVerificationToken(String oldToken);
 
 
     

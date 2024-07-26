@@ -9,14 +9,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.task.user.user.entity.User;
+import com.task.user.user.entity.VerificationToken;
 import com.task.user.user.event.RegistrationCompleteEvent;
 import com.task.user.user.models.UserModel;
+import com.task.user.user.service.EmailServiceImpl;
 import com.task.user.user.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 public class RegistrationController {
+    @Autowired
+    private EmailServiceImpl emailService;
 
     @Autowired
     private UserService userService;
@@ -47,4 +51,30 @@ public class RegistrationController {
         }
         return "Bad User";
     }
+
+    @GetMapping("/resendVerifyToken")
+    public String resendVerificationToken(@RequestParam("token") String oldToken,
+                                          HttpServletRequest request) {
+        VerificationToken verificationToken
+                = userService.generateNewVerificationToken(oldToken);
+        User user = verificationToken.getUser();
+
+
+        resendVerificationTokenMail(user, applicationUrl(request), verificationToken);
+        return "Verification Link Sent";
+    }
+
+    private void resendVerificationTokenMail(User user, String applicationUrl, VerificationToken verificationToken) {
+        String url =
+                applicationUrl
+                        + "/verify?token="
+                        + verificationToken.getToken();
+
+        //sendVerificationEmail()
+        String msg= "Click the link to verify your account:"+url;
+        String status= emailService.sendSimpleMail(user.getEmail(),msg);
+        System.out.println("Click the link to verify your account:"+url);
+    }
+
+
 }
