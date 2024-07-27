@@ -1,9 +1,13 @@
 package com.task.user.user.repository;
 
-import com.task.user.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.task.user.user.entity.User;
+
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    User findByEmail(String email);
+
 }
