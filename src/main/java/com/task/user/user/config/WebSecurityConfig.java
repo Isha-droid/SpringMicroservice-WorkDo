@@ -1,5 +1,6 @@
 package com.task.user.user.config;
 
+import com.task.user.user.filter.JwtFilter;
 import com.task.user.user.service.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.firewall.HttpFirewall;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -22,6 +24,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 public class WebSecurityConfig {
 
     private static final String[] WHITE_LIST_URLS = {
+        "/auth/**",
             "/hello",
             "/register",
             "/signin",
@@ -32,9 +35,14 @@ public class WebSecurityConfig {
     };
 
     private final CustomUserDetailsService userDetailsService;
+    private final JwtFilter jwtRequestFilter;
 
-    public WebSecurityConfig(CustomUserDetailsService userDetailsService) {
+
+    public WebSecurityConfig(CustomUserDetailsService userDetailsService,JwtFilter jwtRequestFilter) {
         this.userDetailsService = userDetailsService;
+        this.jwtRequestFilter = jwtRequestFilter;
+
+
     }
 
     @Bean
@@ -55,9 +63,11 @@ public class WebSecurityConfig {
             .csrf().disable()
             .authorizeHttpRequests()
             .requestMatchers(WHITE_LIST_URLS).permitAll()
-            .anyRequest().permitAll()
+            .anyRequest().authenticated()
             .and()
             .formLogin().disable();
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
 
         return http.build();
     }
